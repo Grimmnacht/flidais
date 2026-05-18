@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flidais - Atendimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col pb-12">
+
+    <header class="bg-emerald-800 text-white py-4 px-6 shadow-md flex items-center gap-4">
+        <button id="btnVoltar" class="text-xl hover:text-emerald-200 transition">←</button>
+        <h1 id="atendimentoTitulo" class="text-xl font-bold font-serif tracking-wide">Atendimento</h1>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto px-4 mt-6 space-y-6">
+        
+        <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Selecionar Protocolo</label>
+            <div class="relative">
+                <select id="protocoloSelect" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 shadow-sm focus:outline-none focus:border-emerald-600 appearance-none font-medium cursor-pointer">
+                    <option value="">-- Escolha um modelo base --</option>
+                    <option value="1">Pós-Operatório Padrão</option>
+                    <option value="2">Vacinação / Vermifugação</option>
+                    <option value="3">Tratamento de Pele (Dermatologia)</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                    ▼
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Evolução / Tratamento Clínico</label>
+            <textarea id="evolucaoTexto" rows="10" 
+                class="w-full p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm focus:outline-none focus:border-emerald-600 transition font-mono text-sm leading-relaxed"
+                placeholder="Selecione um protocolo ou digite a evolução do paciente aqui..."></textarea>
+        </div>
+
+        <button id="btnFinalizarEnviar" 
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-4">
+            <span>💬</span> Finalizar e Enviar via WhatsApp
+        </button>
+
+    </main>
+
+    <script src="js/atendimento.js"></script>
+</body>
+</html>

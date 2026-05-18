@@ -104,6 +104,24 @@ app.post('/cadastro-clinico', async (req, res) => {
     }
 });
 
+app.get('/protocolos/:id', async (req, res) => {
+    const { id } = req.query; 
+    const protocoloId = req.params.id;
+
+    try {
+        const { data: protocolo, error } = await supabase
+            .from('protocolos')
+            .select('*')
+            .eq('id', protocoloId)
+            .single();
+
+        if (error) throw error;
+        return res.json(protocolo);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor do Flidais rodando na porta ${PORT}`);
 });

@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </span>
             `;
 
+            card.addEventListener('click', () => {
+                window.location.href = `atendimento.html?id=${agendamento.id}`;
+            });
+            
             listaContainer.appendChild(card);
         });
 
