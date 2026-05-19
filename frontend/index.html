@@ -6,7 +6,7 @@
     <title>Flidais - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-<style>
+    <style>
         body {
             --s: 220px; /* control the size*/
             --c1: #4fab66;
@@ -25,9 +25,6 @@
     </style>
 </head>
 <body class="h-screen flex flex-col justify-center items-center px-4">
-
-</head>
-<body class="bg-gray-50 h-screen flex flex-col justify-center items-center px-4">
 
     <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm border border-gray-100 text-center">
         
@@ -52,10 +49,6 @@
                     placeholder="••••••••">
             </div>
 
-            <div id="errorMessage" class="text-red-500 text-sm hidden text-center font-medium">
-                E-mail ou senha incorretos.
-            </div>
-
             <button type="submit"
                 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition mt-6">
                 Entrar
@@ -68,6 +61,8 @@
             </div>
         </form>
     </div>
+
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3 pointer-events-none"></div>
 
     <script src="js/login.js"></script>
 </body>

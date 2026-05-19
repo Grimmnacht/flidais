@@ -4,6 +4,35 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'dashboard.html';
     });
 
+    function mostrarNotificacao(mensagem, tipo = 'sucesso') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+
+        const cores = tipo === 'sucesso' 
+            ? 'bg-emerald-600 text-white border-emerald-700' 
+            : 'bg-red-600 text-white border-red-700';
+
+        toast.className = `${cores} px-5 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transition duration-300 transform translate-x-20 opacity-0 pointer-events-auto`;
+ 
+        const icone = tipo === 'sucesso' ? '✨' : '⚠️';
+        toast.innerHTML = `<span>${icone}</span> <span>${mensagem}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-x-20', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('translate-x-20', 'opacity-0');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
     document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -35,15 +64,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
-                alert('Cadastro realizado com sucesso!');
-                window.location.href = 'dashboard.html';
+
+                mostrarNotificacao('Cadastro realizado com sucesso!', 'sucesso');
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
             } else {
-                alert('Erro ao realizar cadastro: ' + result.error);
+                mostrarNotificacao('Erro ao realizar cadastro: ' + result.error, 'erro');
             }
 
         } catch (error) {
             console.error('Erro na requisição:', error);
-            alert('Não foi possível conectar ao servidor.');
+            mostrarNotificacao('Não foi possível conectar ao servidor.', 'erro');
         }
     });
 });
