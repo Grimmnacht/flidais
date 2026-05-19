@@ -16,8 +16,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/test-db', async (req, res) => {
+
+    const { data: dataFiltro } = req.query;
+
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('agendamentos')
             .select(`
                 id,
@@ -28,6 +31,12 @@ app.get('/test-db', async (req, res) => {
                     tutores (nome)
                 )
             `);
+
+        if (dataFiltro) {
+            query = query.eq('data_sessao', dataFiltro);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
 

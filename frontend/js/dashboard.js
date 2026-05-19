@@ -13,11 +13,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hoje = new Date();
     const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
     document.getElementById('currentDate').textContent = hoje.toLocaleDateString('pt-BR', opcoesData);
-
     const listaContainer = document.getElementById('agendaLista');
 
     try {
-        const response = await fetch('http://localhost:3000/test-db');
+
+        const dataHojeIso = hoje.toLocaleDateString('sv-SE');
+        const response = await fetch(`http://localhost:3000/test-db?data=${dataHojeIso}`);
         const agendamentos = await response.json();
 
         listaContainer.innerHTML = '';
