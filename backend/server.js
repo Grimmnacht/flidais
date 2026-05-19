@@ -140,6 +140,24 @@ app.get('/protocolos/:id', async (req, res) => {
     }
 });
 
+app.put('/agendamentos/:id/finalizar', async (req, res) => {
+    const agendamentoId = req.params.id;
+
+    try {
+        const { data, error } = await supabase
+            .from('agendamentos')
+            .update({ status: 'Realizado' })
+            .eq('id', agendamentoId)
+            .select();
+
+        if (error) throw error;
+
+        return res.json({ success: true, message: 'Status atualizado com sucesso!', data });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor do Flidais rodando na porta ${PORT}`);
 });
