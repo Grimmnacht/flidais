@@ -185,6 +185,40 @@ app.put('/agendamentos/:id/finalizar', async (req, res) => {
     }
 });
 
+app.post('/usuarios', async (req, res) => {
+    const { nome, email, senha } = req.body;
+
+    try {
+
+        const { data: usuarioExistente } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (usuarioExistente) {
+            return res.status(400).json({ success: false, message: 'Este e-mail já está em uso.' });
+        }
+
+        const { data: novoUsuario, error } = await supabase
+            .from('usuarios')
+            .insert([{ nome, email, senha }])
+            .select('id, nome, email')
+            .single();
+
+        if (error) throw error;
+
+        return res.json({
+            success: true,
+            message: 'Usuário criado com sucesso!',
+            usuario: novoUsuario
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor do Flidais rodando na porta ${PORT}`);
 });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flidais - Login</title>
+    <title>Flidais - Criar Conta</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 h-screen flex flex-col justify-center items-center px-4">
@@ -12,42 +12,45 @@
         
         <div class="mb-6 flex flex-col items-center">
             <div class="text-emerald-800 text-4xl mb-2">🌳</div>
-            <h1 class="text-3xl font-bold text-emerald-900 tracking-wide font-serif">Flidais</h1>
-            <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider">Gestão Veterinária</p>
+            <h1 class="text-2xl font-bold text-emerald-900 tracking-wide font-serif">Criar Nova Conta</h1>
+            <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider">Cadastro de Veterinário</p>
         </div>
 
-        <form id="loginForm" class="space-y-4 text-left">
+        <form id="cadastroUsuarioForm" class="space-y-4 text-left">
             <div>
-                <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">E-mail</label>
+                <label for="nome" class="block text-sm font-semibold text-gray-700 mb-1">Nome Completo</label>
+                <input type="text" id="nome" required
+                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-600 transition"
+                    placeholder="Seu nome completo">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">E-mail Profissional</label>
                 <input type="email" id="email" required
                     class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-600 transition"
                     placeholder="seu@email.com">
             </div>
 
             <div>
-                <label for="senha" class="block text-sm font-semibold text-gray-700 mb-1">Senha</label>
+                <label for="senha" class="block text-sm font-semibold text-gray-700 mb-1">Senha de Acesso</label>
                 <input type="password" id="senha" required
                     class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:border-emerald-600 transition"
                     placeholder="••••••••">
             </div>
 
-            <div id="errorMessage" class="text-red-500 text-sm hidden text-center font-medium">
-                E-mail ou senha incorretos.
-            </div>
-
             <button type="submit"
                 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition mt-6">
-                Entrar
+                Cadastrar e Entrar
             </button>
-
-            <div class="text-center mt-4">
-                <a href="cadastro-usuario.html" class="text-sm text-emerald-700 hover:text-emerald-900 font-medium transition">
-                    Não tem uma conta? Cadastre-se aqui
-                </a>
-            </div>
         </form>
+
+        <div class="mt-6 text-sm">
+            <a href="index.html" class="text-emerald-700 hover:text-emerald-900 font-medium transition">
+                ← Já tenho uma conta (Fazer Login)
+            </a>
+        </div>
     </div>
 
-    <script src="js/login.js"></script>
+    <script src="js/cadastro-usuario.js"></script>
 </body>
 </html>
