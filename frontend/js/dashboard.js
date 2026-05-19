@@ -13,10 +13,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hoje = new Date();
     const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
     document.getElementById('currentDate').textContent = hoje.toLocaleDateString('pt-BR', opcoesData);
+
     const listaContainer = document.getElementById('agendaLista');
 
     try {
-
         const dataHojeIso = hoje.toLocaleDateString('sv-SE');
         const response = await fetch(`http://localhost:3000/test-db?data=${dataHojeIso}`);
         const agendamentos = await response.json();
@@ -30,14 +30,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         agendamentos.forEach(agendamento => {
             const card = document.createElement('div');
-            card.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:shadow-md cursor-pointer";
+            card.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:shadow-md cursor-pointer relative overflow-hidden group";
 
-            const statusCor = agendamento.status === 'Aguardando' 
-                ? 'bg-amber-50 text-amber-700 border-amber-200' 
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            let statusCor = '';
+            if (agendamento.status === 'Aguardando') {
+                statusCor = 'bg-amber-50 text-amber-700 border-amber-200';
+            } else if (agendamento.status === 'Confirmado') {
+                statusCor = 'bg-blue-50 text-blue-700 border-blue-200';
+            } else {
+                statusCor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            }
+
+            const botaoConfirmarHTML = agendamento.status === 'Aguardando'
+                ? `<button class="btn-confirmar bg-blue-600 hover:bg-blue-700 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm transition transform active:scale-90 ml-3" title="Confirmar Presença">✓</button>`
+                : '';
 
             card.innerHTML = `
-                <div>
+                <div class="flex-1">
                     <div class="text-xl font-bold text-gray-800 mb-0.5">
                         ${agendamento.horario_sessao.slice(0, 5)} - ${agendamento.pacientes.nome}
                     </div>
@@ -45,10 +54,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${agendamento.pacientes.tutores ? agendamento.pacientes.tutores.nome : 'Tutor não informado'}
                     </div>
                 </div>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
-                    ${agendamento.status}
-                </span>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
+                        ${agendamento.status}
+                    </span>
+                    ${botaoConfirmarHTML}
+                </div>
             `;
+
+            if (agendamento.status === 'Aguardando') {
+                const btnConfirmar = card.querySelector('.btn-confirmar');
+                btnConfirmar.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    
+                    try {
+                        const responseConfirmar = await fetch(`http://localhost:3000/agendamentos/${agendamento.id}/confirmar`, {
+                            method: 'PUT'
+                        });
+                        const result = await responseConfirmar.json();
+
+                        if (result.success) {
+
+                            window.location.reload();
+                        } else {
+                            alert('Erro ao confirmar agendamento.');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição:', error);
+                    }
+                });
+            }
 
             card.addEventListener('click', () => {
                 window.location.href = `atendimento.html?id=${agendamento.id}`;
