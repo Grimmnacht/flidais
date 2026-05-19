@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
             petRaca: document.getElementById('petRaca').value,
             petPeso: document.getElementById('petPeso').value,
             tutorNome: document.getElementById('tutorNome').value,
-            tutorTelefone: document.getElementById('tutorTelefone').value
-            tutorEmail: document.getElementById('tutorEmail').value
+            tutorTelefone: document.getElementById('tutorTelefone').value,
+            tutorEmail: document.getElementById('tutorEmail').value,
+            agendaData: document.getElementById('agendamentoData').value,
+            agendaHorario: document.getElementById('agendamentoHorario').value
         };
 
         try {

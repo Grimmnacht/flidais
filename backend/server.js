@@ -17,14 +17,16 @@ app.get('/', (req, res) => {
 
 app.get('/test-db', async (req, res) => {
     try {
-
         const { data, error } = await supabase
             .from('agendamentos')
             .select(`
                 id,
                 horario_sessao,
                 status,
-                pacientes (nome)
+                pacientes (
+                    nome,
+                    tutores (nome)
+                )
             `);
 
         if (error) throw error;
@@ -71,10 +73,14 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/cadastro-clinico', async (req, res) => {
-    const { tutorNome, tutorTelefone, tutorEmail, petNome, petEspecie, petRaca, petPeso } = req.body;
+    const { 
+        tutorNome, tutorTelefone, tutorEmail, 
+        petNome, petEspecie, petRaca, petPeso,
+        agendaData, agendaHorario 
+    } = req.body;
 
     try {
-
+        // 1. Insere o Tutor
         const { data: novoTutor, error: errorTutor } = await supabase
             .from('tutores')
             .insert([{ nome: tutorNome, telefone: tutorTelefone, email: tutorEmail }])
@@ -97,7 +103,19 @@ app.post('/cadastro-clinico', async (req, res) => {
 
         if (errorPet) throw errorPet;
 
-        return res.json({ success: true, message: 'Tutor e Paciente cadastrados com sucesso!' });
+        const { error: errorAgenda } = await supabase
+            .from('agendamentos')
+            .insert([{
+                paciente_id: novoPet.id,
+                usuario_id: 1,
+                data_sessao: agendaData,
+                horario_sessao: agendaHorario,
+                status: 'Aguardando'
+            }]);
+
+        if (errorAgenda) throw errorAgenda;
+
+        return res.json({ success: true, message: 'Fluxo de cadastro e agendamento concluído!' });
 
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });

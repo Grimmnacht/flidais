@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const vetData = JSON.parse(sessionStorage.getItem('usuarioLogado'));
 
     if (!vetData) {
-
         window.location.href = 'index.html';
         return;
     }
@@ -41,7 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="text-xl font-bold text-gray-800 mb-0.5">
                         ${agendamento.horario_sessao.slice(0, 5)} - ${agendamento.pacientes.nome}
                     </div>
-                    <div class="text-sm text-gray-400 font-medium">Marcos</div>
+                    <div class="text-sm text-gray-400 font-medium">
+                        ${agendamento.pacientes.tutores ? agendamento.pacientes.tutores.nome : 'Tutor não informado'}
+                    </div>
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
                     ${agendamento.status}
