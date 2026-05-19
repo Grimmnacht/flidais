@@ -7,16 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const sexoSelecionado = document.querySelector('input[name="petSexo"]:checked')?.value;
+
         const dadosFormulario = {
             petNome: document.getElementById('petNome').value,
             petEspecie: document.getElementById('petEspecie').value,
             petRaca: document.getElementById('petRaca').value,
             petPeso: document.getElementById('petPeso').value,
+            petSexo: sexoSelecionado,
             tutorNome: document.getElementById('tutorNome').value,
             tutorTelefone: document.getElementById('tutorTelefone').value,
             tutorEmail: document.getElementById('tutorEmail').value,
             agendaData: document.getElementById('agendamentoData').value,
-            agendaHorario: document.getElementById('agendamentoHorario').value
+            agendaHorario: document.getElementById('agendamentoHorario').value,
+            observacao: document.getElementById('observacao').value
         };
 
         try {
@@ -32,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 alert('Cadastro realizado com sucesso!');
-
                 window.location.href = 'dashboard.html';
             } else {
                 alert('Erro ao realizar cadastro: ' + result.error);

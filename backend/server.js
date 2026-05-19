@@ -16,7 +16,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/test-db', async (req, res) => {
-
     const { data: dataFiltro } = req.query;
 
     try {
@@ -26,6 +25,7 @@ app.get('/test-db', async (req, res) => {
                 id,
                 horario_sessao,
                 status,
+                observacao,
                 pacientes (
                     nome,
                     tutores (nome)
@@ -52,7 +52,6 @@ app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     try {
-
         const { data: usuario, error } = await supabase
             .from('usuarios')
             .select('*')
@@ -84,12 +83,12 @@ app.post('/login', async (req, res) => {
 app.post('/cadastro-clinico', async (req, res) => {
     const { 
         tutorNome, tutorTelefone, tutorEmail, 
-        petNome, petEspecie, petRaca, petPeso,
-        agendaData, agendaHorario 
+        petNome, petEspecie, petRaca, petPeso, petSexo,
+        agendaData, agendaHorario, observacao 
     } = req.body;
 
     try {
-        // 1. Insere o Tutor
+
         const { data: novoTutor, error: errorTutor } = await supabase
             .from('tutores')
             .insert([{ nome: tutorNome, telefone: tutorTelefone, email: tutorEmail }])
@@ -105,7 +104,8 @@ app.post('/cadastro-clinico', async (req, res) => {
                 nome: petNome,
                 especie: petEspecie,
                 raca: petRaca,
-                peso: parseFloat(petPeso)
+                peso: parseFloat(petPeso),
+                sexo: petSexo
             }])
             .select()
             .single();
@@ -116,10 +116,11 @@ app.post('/cadastro-clinico', async (req, res) => {
             .from('agendamentos')
             .insert([{
                 paciente_id: novoPet.id,
-                usuario_id: 1,
+                usuario_id: 1, 
                 data_sessao: agendaData,
                 horario_sessao: agendaHorario,
-                status: 'Aguardando'
+                status: 'Aguardando',
+                observacao: observacao
             }]);
 
         if (errorAgenda) throw errorAgenda;
@@ -132,7 +133,6 @@ app.post('/cadastro-clinico', async (req, res) => {
 });
 
 app.get('/protocolos/:id', async (req, res) => {
-    const { id } = req.query; 
     const protocoloId = req.params.id;
 
     try {
@@ -179,7 +179,7 @@ app.put('/agendamentos/:id/finalizar', async (req, res) => {
 
         if (error) throw error;
 
-        return res.json({ success: true, message: 'Status atualizado com sucesso!', data });
+        return res.json({ success: true, message: 'Status updated successfully!', data });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -189,7 +189,6 @@ app.post('/usuarios', async (req, res) => {
     const { nome, email, senha } = req.body;
 
     try {
-
         const { data: usuarioExistente } = await supabase
             .from('usuarios')
             .select('id')

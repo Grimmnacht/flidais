@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? `<button class="btn-confirmar bg-blue-600 hover:bg-blue-700 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm transition transform active:scale-90 ml-3" title="Confirmar Presença">✓</button>`
                 : '';
 
+            const observacaoHTML = agendamento.observacao 
+                ? `<div class="text-xs text-gray-500 italic mt-1.5 bg-gray-50 p-1.5 rounded-lg border border-gray-100 max-w-max">⚠️ Lembrete: ${agendamento.observacao}</div>` 
+                : '';
+
             card.innerHTML = `
                 <div class="flex-1">
                     <div class="text-xl font-bold text-gray-800 mb-0.5">
@@ -53,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="text-sm text-gray-400 font-medium">
                         ${agendamento.pacientes.tutores ? agendamento.pacientes.tutores.nome : 'Tutor não informado'}
                     </div>
-                </div>
+                    ${observacaoHTML} </div>
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
                         ${agendamento.status}
