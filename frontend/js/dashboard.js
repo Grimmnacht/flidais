@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-    const usuarioLogado = JSON.stringify(sessionStorage.getItem('usuarioLogado'));
     const vetData = JSON.parse(sessionStorage.getItem('usuarioLogado'));
 
     if (!vetData) {
@@ -15,6 +14,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('currentDate').textContent = hoje.toLocaleDateString('pt-BR', opcoesData);
 
     const listaContainer = document.getElementById('agendaLista');
+
+    function mostrarNotificacao(mensagem, tipo = 'sucesso') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        const cores = tipo === 'sucesso' 
+            ? 'bg-emerald-600 text-white border-emerald-700' 
+            : 'bg-red-600 text-white border-red-700';
+
+        toast.className = `${cores} px-5 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transition duration-300 transform translate-x-20 opacity-0 pointer-events-auto`;
+        const icone = tipo === 'sucesso' ? '✨' : '⚠️';
+        toast.innerHTML = `<span>${icone}</span> <span>${mensagem}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-x-20', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('translate-x-20', 'opacity-0');
+            setTimeout(() => { toast.remove(); }, 300);
+        }, 3000);
+    }
 
     try {
         const dataHojeIso = hoje.toLocaleDateString('sv-SE');
@@ -57,7 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="text-sm text-gray-400 font-medium">
                         ${agendamento.pacientes.tutores ? agendamento.pacientes.tutores.nome : 'Tutor não informado'}
                     </div>
-                    ${observacaoHTML} </div>
+                    ${observacaoHTML} 
+                </div>
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
                         ${agendamento.status}
@@ -78,13 +103,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const result = await responseConfirmar.json();
 
                         if (result.success) {
-
-                            window.location.reload();
+                            mostrarNotificacao('Presença do paciente confirmada!', 'sucesso');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
                         } else {
-                            alert('Erro ao confirmar agendamento.');
+                            mostrarNotificacao('Erro ao confirmar agendamento.', 'erro');
                         }
                     } catch (error) {
                         console.error('Erro na requisição:', error);
+                        mostrarNotificacao('Não foi possível conectar ao servidor.', 'erro');
                     }
                 });
             }
@@ -103,5 +131,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('btnNovoCadastro').addEventListener('click', () => {
         window.location.href = 'cadastro.html';
+    });
+
+    document.getElementById('btnReconsulta').addEventListener('click', () => {
+        window.location.href = 'reconsulta.html';
     });
 });

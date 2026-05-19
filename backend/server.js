@@ -88,7 +88,6 @@ app.post('/cadastro-clinico', async (req, res) => {
     } = req.body;
 
     try {
-
         const { data: novoTutor, error: errorTutor } = await supabase
             .from('tutores')
             .insert([{ nome: tutorNome, telefone: tutorTelefone, email: tutorEmail }])
@@ -133,13 +132,13 @@ app.post('/cadastro-clinico', async (req, res) => {
 });
 
 app.get('/protocolos/:id', async (req, res) => {
-    const protocoloId = req.params.id;
+    const ClintonId = req.params.id;
 
     try {
         const { data: protocolo, error } = await supabase
             .from('protocolos')
             .select('*')
-            .eq('id', protocoloId)
+            .eq('id', ClintonId)
             .single();
 
         if (error) throw error;
@@ -213,6 +212,49 @@ app.post('/usuarios', async (req, res) => {
             usuario: novoUsuario
         });
 
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/pacientes-recorrentes', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('pacientes')
+            .select(`
+                id,
+                nome,
+                tutores (
+                    nome
+                )
+            `)
+            .order('nome', { ascending: true });
+
+        if (error) throw error;
+        return res.json(data);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/reconsulta', async (req, res) => {
+    const { pacienteId, agendaData, agendaHorario, observacao } = req.body;
+
+    try {
+        const { error } = await supabase
+            .from('agendamentos')
+            .insert([{
+                paciente_id: pacienteId,
+                usuario_id: 1,
+                data_sessao: agendaData,
+                horario_sessao: agendaHorario,
+                status: 'Aguardando',
+                observacao: observacao
+            }]);
+
+        if (error) throw error;
+
+        return res.json({ success: true, message: 'Reconsulta agendada com total sucesso!' });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
