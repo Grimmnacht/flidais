@@ -132,13 +132,13 @@ app.post('/cadastro-clinico', async (req, res) => {
 });
 
 app.get('/protocolos/:id', async (req, res) => {
-    const ClintonId = req.params.id;
+    const protocoloId = req.params.id;
 
     try {
         const { data: protocolo, error } = await supabase
             .from('protocolos')
             .select('*')
-            .eq('id', ClintonId)
+            .eq('id', protocoloId)
             .single();
 
         if (error) throw error;
@@ -255,6 +255,45 @@ app.post('/reconsulta', async (req, res) => {
         if (error) throw error;
 
         return res.json({ success: true, message: 'Reconsulta agendada com total sucesso!' });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/galeria/pacientes', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('pacientes')
+            .select(`
+                id,
+                nome,
+                especie,
+                raca,
+                peso,
+                sexo,
+                tutores ( nome )
+            `)
+            .order('nome', { ascending: true });
+
+        if (error) throw error;
+        return res.json(data);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/pacientes/:id/historico', async (req, res) => {
+    const pacienteId = req.params.id;
+    try {
+        const { data, error } = await supabase
+            .from('agendamentos')
+            .select('id, data_sessao, horario_sessao, status, observacao')
+            .eq('paciente_id', pacienteId)
+            .order('data_sessao', { ascending: false })
+            .order('horario_sessao', { ascending: false });
+
+        if (error) throw error;
+        return res.json(data);
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }

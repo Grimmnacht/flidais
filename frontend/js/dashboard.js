@@ -1,12 +1,26 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-    const vetData = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+    const btnNovoCadastro = document.getElementById('btnNovoCadastro');
+    const btnReconsulta = document.getElementById('btnReconsulta');
 
-    if (!vetData) {
+    if (btnNovoCadastro) {
+        btnNovoCadastro.addEventListener('click', () => {
+            window.location.href = 'cadastro.html';
+        });
+    }
+
+    if (btnReconsulta) {
+        btnReconsulta.addEventListener('click', () => {
+            window.location.href = 'reconsulta.html';
+        });
+    }
+
+    const usuarioLogado = sessionStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
         window.location.href = 'index.html';
         return;
     }
-
+    const vetData = JSON.parse(usuarioLogado);
     document.getElementById('vetName').textContent = `Dr(a). ${vetData.nome}`;
 
     const hoje = new Date();
@@ -30,13 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         container.appendChild(toast);
 
-        setTimeout(() => {
-            toast.classList.remove('translate-x-20', 'opacity-0');
-        }, 10);
-
+        setTimeout(() => toast.classList.remove('translate-x-20', 'opacity-0'), 10);
         setTimeout(() => {
             toast.classList.add('translate-x-20', 'opacity-0');
-            setTimeout(() => { toast.remove(); }, 300);
+            setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
 
@@ -47,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         listaContainer.innerHTML = '';
 
-        if (agendamentos.length === 0) {
+        if (!agendamentos || agendamentos.length === 0) {
             listaContainer.innerHTML = `<p class="text-gray-400 text-center py-8">Nenhum atendimento agendado para hoje.</p>`;
             return;
         }
@@ -73,13 +84,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? `<div class="text-xs text-gray-500 italic mt-1.5 bg-gray-50 p-1.5 rounded-lg border border-gray-100 max-w-max">⚠️ Lembrete: ${agendamento.observacao}</div>` 
                 : '';
 
+            const nomeTutor = (agendamento.pacientes && agendamento.pacientes.tutores) ? agendamento.pacientes.tutores.nome : 'Tutor não informado';
+            const nomePet = agendamento.pacientes ? agendamento.pacientes.nome : 'Pet Desconhecido';
+
             card.innerHTML = `
                 <div class="flex-1">
                     <div class="text-xl font-bold text-gray-800 mb-0.5">
-                        ${agendamento.horario_sessao.slice(0, 5)} - ${agendamento.pacientes.nome}
+                        ${agendamento.horario_sessao.slice(0, 5)} - ${nomePet}
                     </div>
                     <div class="text-sm text-gray-400 font-medium">
-                        ${agendamento.pacientes.tutores ? agendamento.pacientes.tutores.nome : 'Tutor não informado'}
+                        ${nomeTutor}
                     </div>
                     ${observacaoHTML} 
                 </div>
@@ -97,16 +111,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     e.stopPropagation();
                     
                     try {
-                        const responseConfirmar = await fetch(`http://localhost:3000/agendamentos/${agendamento.id}/confirmar`, {
-                            method: 'PUT'
-                        });
+                        const responseConfirmar = await fetch(`http://localhost:3000/agendamentos/${agendamento.id}/confirmar`, { method: 'PUT' });
                         const result = await responseConfirmar.json();
 
                         if (result.success) {
                             mostrarNotificacao('Presença do paciente confirmada!', 'sucesso');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
+                            setTimeout(() => window.location.reload(), 1000);
                         } else {
                             mostrarNotificacao('Erro ao confirmar agendamento.', 'erro');
                         }
@@ -128,12 +138,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erro ao buscar agenda:', error);
         listaContainer.innerHTML = `<p class="text-red-500 text-center py-8">Erro ao carregar a agenda.</p>`;
     }
-
-    document.getElementById('btnNovoCadastro').addEventListener('click', () => {
-        window.location.href = 'cadastro.html';
-    });
-
-    document.getElementById('btnReconsulta').addEventListener('click', () => {
-        window.location.href = 'reconsulta.html';
-    });
 });
