@@ -37,7 +37,6 @@ app.get('/test-db', async (req, res) => {
         }
 
         const { data, error } = await query;
-
         if (error) throw error;
 
         return res.json(data);
@@ -74,7 +73,6 @@ app.post('/login', async (req, res) => {
                 email: usuario.email
             }
         });
-
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -125,7 +123,6 @@ app.post('/cadastro-clinico', async (req, res) => {
         if (errorAgenda) throw errorAgenda;
 
         return res.json({ success: true, message: 'Fluxo de cadastro e agendamento concluído!' });
-
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -148,6 +145,30 @@ app.get('/protocolos/:id', async (req, res) => {
     }
 });
 
+app.get('/agendamentos/:id', async (req, res) => {
+    const agendamentoId = req.params.id;
+    try {
+        const { data, error } = await supabase
+            .from('agendamentos')
+            .select(`
+                id,
+                status,
+                evolucao_clinica,
+                pacientes (
+                    nome,
+                    tutores (telefone)
+                )
+            `)
+            .eq('id', agendamentoId)
+            .single();
+
+        if (error) throw error;
+        return res.json(data);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
 app.put('/agendamentos/:id/confirmar', async (req, res) => {
     const agendamentoId = req.params.id;
 
@@ -159,8 +180,7 @@ app.put('/agendamentos/:id/confirmar', async (req, res) => {
             .select();
 
         if (error) throw error;
-
-        return res.json({ success: true, message: 'Agendamento confirmado com sucesso!', data });
+        return res.json({ success: true, message: 'Agendamento confirmed com sucesso!', data });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -168,17 +188,20 @@ app.put('/agendamentos/:id/confirmar', async (req, res) => {
 
 app.put('/agendamentos/:id/finalizar', async (req, res) => {
     const agendamentoId = req.params.id;
+    const { evolucao } = req.body; 
 
     try {
         const { data, error } = await supabase
             .from('agendamentos')
-            .update({ status: 'Realizado' })
+            .update({ 
+                status: 'Realizado',
+                evolucao_clinica: evolucao 
+            })
             .eq('id', agendamentoId)
             .select();
 
         if (error) throw error;
-
-        return res.json({ success: true, message: 'Status updated successfully!', data });
+        return res.json({ success: true, message: 'Status e evolução atualizados com sucesso!', data });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -211,7 +234,6 @@ app.post('/usuarios', async (req, res) => {
             message: 'Usuário criado com sucesso!',
             usuario: novoUsuario
         });
-
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -222,11 +244,7 @@ app.get('/pacientes-recorrentes', async (req, res) => {
         const { data, error } = await supabase
             .from('pacientes')
             .select(`
-                id,
-                nome,
-                tutores (
-                    nome
-                )
+                id, nome, tutores ( nome )
             `)
             .order('nome', { ascending: true });
 
@@ -253,8 +271,7 @@ app.post('/reconsulta', async (req, res) => {
             }]);
 
         if (error) throw error;
-
-        return res.json({ success: true, message: 'Reconsulta agendada com total sucesso!' });
+        return res.json({ success: true, message: 'Reconsulta agendada com sucesso!' });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -265,13 +282,7 @@ app.get('/api/galeria/pacientes', async (req, res) => {
         const { data, error } = await supabase
             .from('pacientes')
             .select(`
-                id,
-                nome,
-                especie,
-                raca,
-                peso,
-                sexo,
-                tutores ( nome )
+                id, nome, especie, raca, peso, sexo, tutores ( nome )
             `)
             .order('nome', { ascending: true });
 
@@ -287,7 +298,7 @@ app.get('/api/pacientes/:id/historico', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('agendamentos')
-            .select('id, data_sessao, horario_sessao, status, observacao')
+            .select('id, data_sessao, horario_sessao, status, observacao, evolucao_clinica')
             .eq('paciente_id', pacienteId)
             .order('data_sessao', { ascending: false })
             .order('horario_sessao', { ascending: false });
