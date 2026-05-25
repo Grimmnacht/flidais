@@ -29,6 +29,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const listaContainer = document.getElementById('agendaLista');
 
+    let agendamentoParaCancelar = null;
+    const modalCancelar = document.getElementById('modalCancelar');
+    const btnFecharModalCancelar = document.getElementById('btnFecharModalCancelar');
+    const btnConfirmarCancelar = document.getElementById('btnConfirmarCancelar');
+
+    function fecharModalCancelar() {
+        agendamentoParaCancelar = null;
+        modalCancelar.classList.add('opacity-0', 'pointer-events-none');
+        modalCancelar.querySelector('.transform').classList.add('scale-95');
+    }
+
+    if (btnFecharModalCancelar) {
+        btnFecharModalCancelar.addEventListener('click', fecharModalCancelar);
+    }
+
+    if (btnConfirmarCancelar) {
+        btnConfirmarCancelar.addEventListener('click', async () => {
+            if (!agendamentoParaCancelar) return;
+
+            try {
+                const response = await fetch(`http://localhost:3000/agendamentos/${agendamentoParaCancelar}/cancelar`, { method: 'PUT' });
+                const result = await response.json();
+
+                if (result.success) {
+                    mostrarNotificacao('Agendamento cancelado com sucesso.', 'sucesso');
+                    fecharModalCancelar();
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    mostrarNotificacao('Erro ao cancelar agendamento.', 'erro');
+                }
+            } catch (error) {
+                console.error('Erro ao cancelar:', error);
+                mostrarNotificacao('Não foi possível conectar ao servidor.', 'erro');
+            }
+        });
+    }
+
     function mostrarNotificacao(mensagem, tipo = 'sucesso') {
         const container = document.getElementById('toastContainer');
         if (!container) return;
@@ -39,8 +76,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             : 'bg-red-600 text-white border-red-700';
 
         toast.className = `${cores} px-5 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transition duration-300 transform translate-x-20 opacity-0 pointer-events-auto`;
-        const icone = tipo === 'sucesso' ? '✨' : '⚠️';
-        toast.innerHTML = `<span>${icone}</span> <span>${mensagem}</span>`;
+        
+        const iconeSucesso = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 12l2 2l4 -4" /></svg>`;
+        const iconeErro = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>`;
+        
+        toast.innerHTML = `<span>${tipo === 'sucesso' ? iconeSucesso : iconeErro}</span> <span>${mensagem}</span>`;
 
         container.appendChild(toast);
 
@@ -77,11 +117,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const botaoConfirmarHTML = agendamento.status === 'Aguardando'
-                ? `<button class="btn-confirmar bg-blue-600 hover:bg-blue-700 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm transition transform active:scale-90 ml-3" title="Confirmar Presença">✓</button>`
+                ? `<button class="btn-confirmar bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Confirmar Presença">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                   </button>`
+                : '';
+
+            const botaoCancelarHTML = (agendamento.status === 'Aguardando' || agendamento.status === 'Confirmado')
+                ? `<button class="btn-cancelar bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Cancelar Agendamento">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                   </button>`
                 : '';
 
             const observacaoHTML = agendamento.observacao 
-                ? `<div class="text-xs text-gray-500 italic mt-1.5 bg-gray-50 p-1.5 rounded-lg border border-gray-100 max-w-max">⚠️ Lembrete: ${agendamento.observacao}</div>` 
+                ? `<div class="text-xs text-gray-500 italic mt-1.5 bg-gray-50 p-1.5 rounded-lg border border-gray-100 max-w-max flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+                    Lembrete: ${agendamento.observacao}
+                   </div>` 
                 : '';
 
             const nomeTutor = (agendamento.pacientes && agendamento.pacientes.tutores) ? agendamento.pacientes.tutores.nome : 'Tutor não informado';
@@ -97,11 +148,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     ${observacaoHTML} 
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-col items-end gap-2">
                     <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
                         ${agendamento.status}
                     </span>
-                    ${botaoConfirmarHTML}
+                    <div class="flex gap-1.5">
+                        ${botaoConfirmarHTML}
+                        ${botaoCancelarHTML}
+                    </div>
                 </div>
             `;
 
@@ -125,6 +179,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         mostrarNotificacao('Não foi possível conectar ao servidor.', 'erro');
                     }
                 });
+            }
+
+            if (agendamento.status === 'Aguardando' || agendamento.status === 'Confirmado') {
+                const btnCancelar = card.querySelector('.btn-cancelar');
+                if (btnCancelar) {
+                    btnCancelar.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        agendamentoParaCancelar = agendamento.id;
+                        modalCancelar.classList.remove('opacity-0', 'pointer-events-none');
+                        modalCancelar.querySelector('.transform').classList.remove('scale-95');
+                    });
+                }
             }
 
             card.addEventListener('click', () => {

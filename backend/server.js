@@ -30,7 +30,8 @@ app.get('/test-db', async (req, res) => {
                     nome,
                     tutores (nome)
                 )
-            `);
+            `)
+            .neq('status', 'Cancelado');
 
         if (dataFiltro) {
             query = query.eq('data_sessao', dataFiltro);
@@ -41,11 +42,9 @@ app.get('/test-db', async (req, res) => {
 
         return res.json(data);
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
-
-const PORT = process.env.PORT || 3000;
 
 app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
@@ -72,6 +71,38 @@ app.post('/login', async (req, res) => {
                 nome: usuario.nome,
                 email: usuario.email
             }
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/usuarios', async (req, res) => {
+    const { nome, email, senha } = req.body;
+
+    try {
+        const { data: usuarioExistente } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (usuarioExistente) {
+            return res.status(400).json({ success: false, message: 'Este e-mail já está em uso.' });
+        }
+
+        const { data: novoUsuario, error } = await supabase
+            .from('usuarios')
+            .insert([{ nome, email, senha }])
+            .select('id, nome, email')
+            .single();
+
+        if (error) throw error;
+
+        return res.json({
+            success: true,
+            message: 'Usuário criado com sucesso!',
+            usuario: novoUsuario
         });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
@@ -141,7 +172,7 @@ app.get('/protocolos/:id', async (req, res) => {
         if (error) throw error;
         return res.json(protocolo);
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -165,7 +196,7 @@ app.get('/agendamentos/:id', async (req, res) => {
         if (error) throw error;
         return res.json(data);
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -180,7 +211,24 @@ app.put('/agendamentos/:id/confirmar', async (req, res) => {
             .select();
 
         if (error) throw error;
-        return res.json({ success: true, message: 'Agendamento confirmed com sucesso!', data });
+        return res.json({ success: true, message: 'Agendamento confirmado com sucesso!', data });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.put('/agendamentos/:id/cancelar', async (req, res) => {
+    const agendamentoId = req.params.id;
+
+    try {
+        const { data, error } = await supabase
+            .from('agendamentos')
+            .update({ status: 'Cancelado' })
+            .eq('id', agendamentoId)
+            .select();
+
+        if (error) throw error;
+        return res.json({ success: true, message: 'Agendamento cancelado com sucesso!', data });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -202,38 +250,6 @@ app.put('/agendamentos/:id/finalizar', async (req, res) => {
 
         if (error) throw error;
         return res.json({ success: true, message: 'Status e evolução atualizados com sucesso!', data });
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.post('/usuarios', async (req, res) => {
-    const { nome, email, senha } = req.body;
-
-    try {
-        const { data: usuarioExistente } = await supabase
-            .from('usuarios')
-            .select('id')
-            .eq('email', email)
-            .maybeSingle();
-
-        if (usuarioExistente) {
-            return res.status(400).json({ success: false, message: 'Este e-mail já está em uso.' });
-        }
-
-        const { data: novoUsuario, error } = await supabase
-            .from('usuarios')
-            .insert([{ nome, email, senha }])
-            .select('id, nome, email')
-            .single();
-
-        if (error) throw error;
-
-        return res.json({
-            success: true,
-            message: 'Usuário criado com sucesso!',
-            usuario: novoUsuario
-        });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
@@ -310,6 +326,7 @@ app.get('/api/pacientes/:id/historico', async (req, res) => {
     }
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor do Flidais rodando na porta ${PORT}`);
 });
