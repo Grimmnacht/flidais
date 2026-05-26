@@ -4,46 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flidais - Galeria de Pacientes</title>
+    
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col pb-12">
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
 
-    <header class="bg-emerald-800 text-white py-4 px-6 shadow-md flex items-center gap-4">
-        <button id="btnVoltar" class="text-xl hover:text-emerald-200 transition">←</button>
-        <h1 class="text-xl font-bold font-serif tracking-wide">Galeria de Pacientes</h1>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-900 min-h-screen flex flex-col pb-12 transition-colors duration-300">
+
+    <header class="bg-emerald-950 text-white py-4 px-6 shadow-lg border-b border-emerald-900 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button id="btnVoltar" class="text-white hover:text-emerald-300 transition flex items-center justify-center p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" />
+                </svg>
+            </button>
+            <h1 class="text-xl font-bold font-serif tracking-wide text-emerald-50">Galeria de Pacientes</h1>
+        </div>
+        
+        <button id="themeToggleBtn" title="Alternar Tema" class="text-emerald-100/80 hover:text-white transition focus:outline-none">
+            <svg id="themeIconDark" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg>
+            <svg id="themeIconLight" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" /></svg>
+        </button>
     </header>
 
     <main class="flex-1 max-w-md w-full mx-auto px-4 mt-6 flex flex-col gap-4">
-        
         <div class="relative w-full">
-            <input type="text" id="searchBar" 
-                class="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-gray-800 shadow-sm focus:outline-none focus:border-emerald-600 transition font-medium text-sm"
-                placeholder="Pesquise por pet, espécie ou tutor...">
+            <input type="text" id="searchBar" class="w-full px-4 py-3 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-800 dark:text-zinc-100 shadow-sm focus:outline-none focus:border-emerald-600 transition font-medium text-sm" placeholder="Pesquise por pet, espécie ou tutor...">
         </div>
 
-        <div id="galeriaLista" class="space-y-4">
-            <p class="text-gray-400 text-center py-8">Carregando pacientes...</p>
-        </div>
+        <div id="galeriaLista" class="space-y-4"></div>
     </main>
 
-    <div id="modalHistorico" class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-xl max-h-[80vh] flex flex-col overflow-hidden transform translate-y-10 transition-transform duration-300">
-            
-            <div class="p-6 border-b border-gray-100 flex justify-between items-start bg-gray-50">
+    <div id="modalHistorico" class="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-xl max-h-[80vh] flex flex-col overflow-hidden transform translate-y-10 transition-transform duration-300 border border-transparent dark:border-zinc-700">
+            <div class="p-6 border-b border-gray-100 dark:border-zinc-700 flex justify-between items-start bg-gray-50 dark:bg-zinc-900/50 transition-colors">
                 <div>
-                    <h3 id="modalPetNome" class="text-2xl font-bold text-gray-800">Nome do Pet</h3>
-                    <p id="modalPetDetalhes" class="text-xs text-gray-400 font-semibold uppercase tracking-wider mt-0.5">Espécie - Raça</p>
+                    <h3 id="modalPetNome" class="text-2xl font-bold text-gray-800 dark:text-zinc-100">Nome do Pet</h3>
+                    <p id="modalPetDetalhes" class="text-xs text-gray-400 dark:text-zinc-500 font-semibold uppercase tracking-wider mt-0.5">Espécie - Raça</p>
                 </div>
-                <button id="btnCloseModal" class="text-gray-400 hover:text-gray-600 text-2xl font-semibold px-2">×</button>
+                <button id="btnCloseModal" class="text-gray-400 hover:text-gray-600 dark:text-zinc-500 text-2xl font-semibold px-2">×</button>
             </div>
-
-            <div id="modalCorpoTimeline" class="p-6 overflow-y-auto flex-1 space-y-6">
-                </div>
+            <div id="modalCorpoTimeline" class="p-6 overflow-y-auto flex-1 space-y-6"></div>
         </div>
     </div>
 
     <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3 pointer-events-none"></div>
 
+    <script src="js/theme.js"></script>
     <script src="js/galeria.js"></script>
 </body>
 </html>

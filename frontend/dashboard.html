@@ -4,34 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flidais - Dashboard</title>
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col pb-24">
+<body class="bg-gray-50 dark:bg-zinc-900 min-h-screen flex flex-col pb-24 transition-colors duration-300">
 
-    <header class="bg-emerald-800 text-white py-4 px-6 shadow-md flex justify-between items-center">
+    <header class="bg-emerald-950 text-white py-4 px-6 shadow-lg border-b border-emerald-900 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M12 13l-2 -2" />
-                <path d="M12 12l2 -2" />
-                <path d="M12 21v-13" />
-                <path d="M9.824 16a3 3 0 0 1 -2.743 -3.69l.862 -2.762c.105 -.333 .471 -.54 .808 -.464l.948 .215c.068 .016 .139 .016 .207 0l.948 -.215c.337 -.076 .703 .131 .808 .464l.862 2.762a3 3 0 0 1 -2.743 3.69z" />
-                <path d="M14.176 16a3 3 0 0 0 2.743 -3.69l-.862 -2.762c-.105 -.333 -.471 -.54 -.808 -.464l-.948 .215c-.068 .016 -.139 .016 -.207 0l-.948 -.215c-.337 -.076 -.703 .131 -.808 .464l-.862 2.762a3 3 0 0 0 2.743 3.69z" />
-            </svg>
-            <h1 class="text-xl font-bold font-serif tracking-wide">Flidais</h1>
+            <img src="img/arvore-celta.png" alt="Símbolo Flidais" class="w-8 h-8 object-contain drop-shadow-md">
+            <h1 class="text-xl font-bold font-serif tracking-wide text-emerald-50">Flidais</h1>
         </div>
-        <span id="vetName" class="text-sm font-medium text-emerald-100">Veterinário</span>
+        
+        <div class="flex items-center gap-4">
+            <span id="vetName" class="text-sm font-medium text-emerald-100/80">Veterinário</span>
+            
+            <button id="themeToggleBtn" title="Alternar Tema" class="text-emerald-100/80 hover:text-white transition focus:outline-none">
+                <svg id="themeIconDark" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+                </svg>
+                <svg id="themeIconLight" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+                    <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
+                </svg>
+            </button>
+        </div>
     </header>
 
     <main class="flex-1 max-w-md w-full mx-auto px-4 mt-6">
         
         <div class="mb-6 flex justify-between items-center">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">Agenda de Hoje</h2>
-                <p id="currentDate" class="text-sm text-gray-400 font-medium mt-0.5">Carregando data...</p>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-zinc-100 transition-colors">Agenda de Hoje</h2>
+                <p id="currentDate" class="text-sm text-gray-400 dark:text-zinc-500 font-medium mt-0.5 transition-colors">Carregando data...</p>
             </div>
             
-            <a href="galeria.html" class="text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm border border-emerald-200">
+            <a href="galeria.html" class="text-emerald-700 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800/50 dark:hover:bg-emerald-900/60 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm border border-emerald-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
@@ -41,18 +61,18 @@
         </div>
 
         <div id="agendaLista" class="space-y-4">
-            <p class="text-gray-500 text-center py-8">Buscando atendimentos no banco...</p>
+            <p class="text-gray-500 dark:text-zinc-500 text-center py-8">Buscando atendimentos no banco...</p>
         </div>
 
     </main>
 
-    <div id="modalCancelar" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 transform scale-95 transition-transform duration-300">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Cancelar Agendamento?</h3>
-            <p class="text-sm text-gray-500 mb-6">Esta ação removerá o paciente da agenda de hoje. O histórico será mantido como cancelado no sistema.</p>
+    <div id="modalCancelar" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-zinc-800 w-full max-w-sm rounded-2xl shadow-xl border border-transparent dark:border-zinc-700 p-6 transform scale-95 transition-transform duration-300">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-zinc-100 mb-2 transition-colors">Cancelar Agendamento?</h3>
+            <p class="text-sm text-gray-500 dark:text-zinc-400 mb-6 transition-colors">Esta ação removerá o paciente da agenda de hoje. O histórico será mantido como cancelado no sistema.</p>
             <div class="flex gap-3 justify-end">
-                <button id="btnFecharModalCancelar" class="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition focus:outline-none">Voltar</button>
-                <button id="btnConfirmarCancelar" class="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition flex items-center gap-2 focus:outline-none">
+                <button id="btnFecharModalCancelar" class="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600 rounded-xl transition focus:outline-none">Voltar</button>
+                <button id="btnConfirmarCancelar" class="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-700/80 dark:hover:bg-red-600 rounded-xl transition flex items-center gap-2 focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M4 7h16" />
@@ -67,8 +87,7 @@
         </div>
     </div>
 
-    <button id="btnReconsulta" title="Agendar Reconsulta"
-        class="fixed bottom-6 left-6 w-14 h-14 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full shadow-lg transition duration-300 transform active:scale-95 flex items-center justify-center focus:outline-none select-none z-50">
+    <button id="btnReconsulta" title="Agendar Reconsulta" class="fixed bottom-6 left-6 w-14 h-14 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full shadow-lg transition duration-300 transform active:scale-95 flex items-center justify-center focus:outline-none select-none z-40">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
@@ -76,8 +95,7 @@
         </svg>
     </button>
 
-    <button id="btnNovoCadastro" title="Novo Cadastro"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg transition duration-300 transform active:scale-95 flex items-center justify-center text-3xl font-light pb-1 focus:outline-none select-none z-50">
+    <button id="btnNovoCadastro" title="Novo Cadastro" class="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg transition duration-300 transform active:scale-95 flex items-center justify-center text-3xl font-light pb-1 focus:outline-none select-none z-40">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <path d="M12 5l0 14" />
@@ -87,6 +105,7 @@
 
     <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3 pointer-events-none"></div>
 
+    <script src="js/theme.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

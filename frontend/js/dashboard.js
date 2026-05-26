@@ -1,3 +1,7 @@
+const twSafelist = document.createElement('div');
+twSafelist.className = "hidden dark:bg-zinc-800 dark:border-zinc-700/80 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/50 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50 dark:bg-emerald-700 dark:border-emerald-800 dark:bg-red-700 dark:border-red-800 dark:hover:bg-blue-900/50 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-zinc-400 dark:bg-zinc-900/50 dark:border-zinc-700/50 dark:text-zinc-100 dark:text-zinc-500 transition-colors";
+document.body.appendChild(twSafelist);
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     const btnNovoCadastro = document.getElementById('btnNovoCadastro');
@@ -72,8 +76,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const toast = document.createElement('div');
         const cores = tipo === 'sucesso' 
-            ? 'bg-emerald-600 text-white border-emerald-700' 
-            : 'bg-red-600 text-white border-red-700';
+            ? 'bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-700 dark:border-emerald-800' 
+            : 'bg-red-600 dark:bg-red-700 text-white border-red-700 dark:border-red-800';
 
         toast.className = `${cores} px-5 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transition duration-300 transform translate-x-20 opacity-0 pointer-events-auto`;
         
@@ -99,37 +103,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         listaContainer.innerHTML = '';
 
         if (!agendamentos || agendamentos.length === 0) {
-            listaContainer.innerHTML = `<p class="text-gray-400 text-center py-8">Nenhum atendimento agendado para hoje.</p>`;
+            listaContainer.innerHTML = `<p class="text-gray-400 dark:text-zinc-500 text-center py-8">Nenhum atendimento agendado para hoje.</p>`;
             return;
         }
 
         agendamentos.forEach(agendamento => {
             const card = document.createElement('div');
-            card.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:shadow-md cursor-pointer relative overflow-hidden group";
+            card.className = "bg-white dark:bg-zinc-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700/80 flex justify-between items-center transition-colors hover:shadow-md cursor-pointer relative overflow-hidden group";
 
             let statusCor = '';
             if (agendamento.status === 'Aguardando') {
-                statusCor = 'bg-amber-50 text-amber-700 border-amber-200';
+                statusCor = 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/50';
             } else if (agendamento.status === 'Confirmado') {
-                statusCor = 'bg-blue-50 text-blue-700 border-blue-200';
+                statusCor = 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50';
             } else {
-                statusCor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                statusCor = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50';
             }
 
             const botaoConfirmarHTML = agendamento.status === 'Aguardando'
-                ? `<button class="btn-confirmar bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Confirmar Presença">
+                ? `<button class="btn-confirmar bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400 dark:hover:bg-blue-900/50 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Confirmar Presença">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
                    </button>`
                 : '';
 
             const botaoCancelarHTML = (agendamento.status === 'Aguardando' || agendamento.status === 'Confirmado')
-                ? `<button class="btn-cancelar bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Cancelar Agendamento">
+                ? `<button class="btn-cancelar bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/50 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition transform active:scale-90" title="Cancelar Agendamento">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                    </button>`
                 : '';
 
             const observacaoHTML = agendamento.observacao 
-                ? `<div class="text-xs text-gray-500 italic mt-1.5 bg-gray-50 p-1.5 rounded-lg border border-gray-100 max-w-max flex items-center gap-1">
+                ? `<div class="text-xs text-gray-500 dark:text-zinc-400 italic mt-1.5 bg-gray-50 dark:bg-zinc-900/50 p-1.5 rounded-lg border border-gray-100 dark:border-zinc-700/50 max-w-max flex items-center gap-1 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
                     Lembrete: ${agendamento.observacao}
                    </div>` 
@@ -140,16 +144,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             card.innerHTML = `
                 <div class="flex-1">
-                    <div class="text-xl font-bold text-gray-800 mb-0.5">
+                    <div class="text-xl font-bold text-gray-800 dark:text-zinc-100 mb-0.5 transition-colors">
                         ${agendamento.horario_sessao.slice(0, 5)} - ${nomePet}
                     </div>
-                    <div class="text-sm text-gray-400 font-medium">
+                    <div class="text-sm text-gray-400 dark:text-zinc-500 font-medium transition-colors">
                         ${nomeTutor}
                     </div>
                     ${observacaoHTML} 
                 </div>
                 <div class="flex flex-col items-end gap-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusCor}">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${statusCor}">
                         ${agendamento.status}
                     </span>
                     <div class="flex gap-1.5">
@@ -185,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const btnCancelar = card.querySelector('.btn-cancelar');
                 if (btnCancelar) {
                     btnCancelar.addEventListener('click', (e) => {
-                        e.stopPropagation();
+                        e.stopPropagation(); 
                         agendamentoParaCancelar = agendamento.id;
                         modalCancelar.classList.remove('opacity-0', 'pointer-events-none');
                         modalCancelar.querySelector('.transform').classList.remove('scale-95');
