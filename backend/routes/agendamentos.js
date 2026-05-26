@@ -4,7 +4,7 @@ const db = require('../db');
 const { validarFinalizacaoAgendamento, validarReconsulta } = require('../middleware/validation');
 
 router.get('/test-db', async (req, res, next) => {
-    const { dataFiltro } = req.query;
+    const { data: dataFiltro } = req.query;
 
     try {
         const { data, error } = await db.buscarAgendamentos(dataFiltro);

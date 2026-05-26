@@ -70,6 +70,7 @@ const buscarAgendamentos = async (dataFiltro) => {
         .from(TABLES.AGENDAMENTOS)
         .select(`
             id,
+            data_sessao,
             horario_sessao,
             status,
             observacao,
@@ -81,10 +82,13 @@ const buscarAgendamentos = async (dataFiltro) => {
         .neq('status', AGENDAMENTO_STATUS.CANCELADO);
 
     if (dataFiltro) {
-        query = query.eq('data_sessao', dataFiltro);
+
+        query = query.or(`data_sessao.eq.${dataFiltro},status.in.(Aguardando,Confirmado)`);
     }
 
-    return await query;
+    return await query
+        .order('data_sessao', { ascending: true })
+        .order('horario_sessao', { ascending: true });
 };
 
 const buscarAgendamentoPorId = async (agendamentoId) => {
