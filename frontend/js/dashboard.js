@@ -3,7 +3,6 @@ twSafelist.className = "hidden dark:bg-zinc-800 dark:border-zinc-700/80 dark:bg-
 document.body.appendChild(twSafelist);
 
 document.addEventListener('DOMContentLoaded', async () => {
-
     const btnNovoCadastro = document.getElementById('btnNovoCadastro');
     const btnReconsulta = document.getElementById('btnReconsulta');
 
@@ -38,11 +37,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnFecharModalCancelar = document.getElementById('btnFecharModalCancelar');
     const btnConfirmarCancelar = document.getElementById('btnConfirmarCancelar');
 
-    function fecharModalCancelar() {
+    const fecharModalCancelar = () => {
         agendamentoParaCancelar = null;
         modalCancelar.classList.add('opacity-0', 'pointer-events-none');
         modalCancelar.querySelector('.transform').classList.add('scale-95');
-    }
+    };
 
     if (btnFecharModalCancelar) {
         btnFecharModalCancelar.addEventListener('click', fecharModalCancelar);
@@ -53,16 +52,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!agendamentoParaCancelar) return;
 
             try {
-                const response = await fetch(`http://localhost:3000/agendamentos/${agendamentoParaCancelar}/cancelar`, { method: 'PUT' });
-                const result = await response.json();
+                const { ok, json } = await api.put(`/agendamentos/${agendamentoParaCancelar}/cancelar`);
 
-                if (result.success) {
+                if (ok && json && json.success) {
                     mostrarNotificacao('Agendamento cancelado com sucesso.', 'sucesso');
                     fecharModalCancelar();
                     setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    mostrarNotificacao('Erro ao cancelar agendamento.', 'erro');
+                    return;
                 }
+
+                mostrarNotificacao('Erro ao cancelar agendamento.', 'erro');
             } catch (error) {
                 console.error('Erro ao cancelar:', error);
                 mostrarNotificacao('Não foi possível conectar ao servidor.', 'erro');
@@ -70,39 +69,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    function mostrarNotificacao(mensagem, tipo = 'sucesso') {
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-
-        const toast = document.createElement('div');
-        const cores = tipo === 'sucesso' 
-            ? 'bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-700 dark:border-emerald-800' 
-            : 'bg-red-600 dark:bg-red-700 text-white border-red-700 dark:border-red-800';
-
-        toast.className = `${cores} px-5 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transition duration-300 transform translate-x-20 opacity-0 pointer-events-auto`;
-        
-        const iconeSucesso = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 12l2 2l4 -4" /></svg>`;
-        const iconeErro = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>`;
-        
-        toast.innerHTML = `<span>${tipo === 'sucesso' ? iconeSucesso : iconeErro}</span> <span>${mensagem}</span>`;
-
-        container.appendChild(toast);
-
-        setTimeout(() => toast.classList.remove('translate-x-20', 'opacity-0'), 10);
-        setTimeout(() => {
-            toast.classList.add('translate-x-20', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
     try {
         const dataHojeIso = hoje.toLocaleDateString('sv-SE');
-        const response = await fetch(`http://localhost:3000/test-db?data=${dataHojeIso}`);
-        const agendamentos = await response.json();
+        const { ok, json: agendamentos } = await api.get(`/test-db?data=${dataHojeIso}`);
 
         listaContainer.innerHTML = '';
 
-        if (!agendamentos || agendamentos.length === 0) {
+        if (!ok || !agendamentos || agendamentos.length === 0) {
             listaContainer.innerHTML = `<p class="text-gray-400 dark:text-zinc-500 text-center py-8">Nenhum atendimento agendado para hoje.</p>`;
             return;
         }
@@ -169,10 +142,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     e.stopPropagation();
                     
                     try {
-                        const responseConfirmar = await fetch(`http://localhost:3000/agendamentos/${agendamento.id}/confirmar`, { method: 'PUT' });
-                        const result = await responseConfirmar.json();
+                        const { ok, json } = await api.put(`/agendamentos/${agendamento.id}/confirmar`);
 
-                        if (result.success) {
+                        if (ok && json && json.success) {
                             mostrarNotificacao('Presença do paciente confirmada!', 'sucesso');
                             setTimeout(() => window.location.reload(), 1000);
                         } else {

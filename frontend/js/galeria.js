@@ -69,12 +69,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        fetch('http://localhost:3000/api/galeria/pacientes')
-            .then(res => res.json())
-            .then(data => {
-                todosPacientes = data;
-                renderPacientes(todosPacientes);
-            });
+        const { ok, json: data } = await api.get('/api/galeria/pacientes');
+        if (!ok || !Array.isArray(data)) {
+            throw new Error('Falha ao carregar pacientes');
+        }
+
+        todosPacientes = data;
+        renderPacientes(todosPacientes);
     } catch (error) {
         galeriaLista.innerHTML = '<p class="text-red-500 dark:text-red-400 text-center py-8">Erro ao conectar com a base de dados.</p>';
     }
@@ -100,10 +101,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         abrirModal();
 
         try {
-            const response = await fetch(`http://localhost:3000/api/pacientes/${pet.id}/historico`);
-            const historico = await response.json();
+            const { ok, json: historico } = await api.get(`/api/pacientes/${pet.id}/historico`);
 
             timelineContainer.innerHTML = '';
+            if (!ok || !Array.isArray(historico)) {
+                throw new Error('Falha ao carregar histórico');
+            }
 
             if (historico.length === 0) {
                 timelineContainer.innerHTML = '<p class="text-gray-400 dark:text-zinc-500 text-center py-4 transition-colors">Nenhum registro clínico encontrado para este paciente.</p>';
