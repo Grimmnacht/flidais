@@ -56,7 +56,7 @@ Desenvolvido com **HTML5, JavaScript Vanilla e Tailwind CSS**. A interface foi p
 1. Clone o repositório:
    
 ```bash
-git clone [https://github.com/seu-usuario/flidais.git](https://github.com/seu-usuario/flidais.git)
+git clone https://github.com/Grimmnacht/flidais.git
 cd flidais
 
 ```
